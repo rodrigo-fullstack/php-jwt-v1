@@ -1,0 +1,21 @@
+{
+    "name": "rodrigo/jwt-php",
+    "description": "JWT com PHP",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "app\\": "app"
+        }
+    },
+    "authors": [
+        {
+            "name": "rodrigo-fullstack",
+            "email": "rodrigopereirafaria9@gmail.com"
+        }
+    ],
+    "require": {
+        "firebase/php-jwt": "^6.10",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

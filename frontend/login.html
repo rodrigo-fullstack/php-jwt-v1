@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="assets/css/main/main-content-login.css">
+    <link rel="stylesheet" href="assets/css/login/login-container.css">
+    <link rel="stylesheet" href="assets/css/root/root-login.css">
+    <link rel="stylesheet" href="assets/css/login/input-row-login.css">
+    <link rel="stylesheet" href="assets/css/login/button-login.css">
+    <link rel="stylesheet" href="assets/css/login/title-content-login.css">
+</head>
+<body>
+    <main class="main-content">
+        <form method="post" class="login-container">
+            <div class="title-content">
+                <label for="title">Login</label>
+            </div>
+            <div class="input-row">
+                <label class="subtitle-content" for="email">E-mail</label>
+                <input type="text" id="email" name="email" placeholder="Digite seu e-mail">
+            </div>
+
+            <div class="input-row">
+                <label class="subtitle-content" for="senha">Senha</label>
+                <input type="text" id="senha" name="senha" placeholder="Digite sua senha">
+            </div>
+
+            <div class="btn-container">
+                <button class="btn" type="submit">
+                    Entrar
+                </button>
+
+            </div>
+        </form>
+        <!-- Não pode estar dentro do form, gera requisição como um submit... -->
+        <button class="btn verify-auth">
+            Verificar Autenticação
+        </button>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+        const form = document.querySelector('.login-container');
+
+        axios.defaults.baseURL = 'http://localhost'
+        
+        // Envio dos dados precisa ser assíncrono na função anônima
+        form.addEventListener('submit', async function(event){
+            event.preventDefault();
+
+            // Capturando dados do formulário automaticamente
+            const formData = new FormData(event.target);
+
+            // Envia com método POST para o login.php os dados do formulário...
+            try{
+                const {data} = await axios.post('/backend-php/jwt-php/primeiro-jwt/backend/public/login.php', formData);
+                //Data vem do PHP...
+                
+                sessionStorage.setItem('session', data);
+                // console.log(data)
+            } catch(error){
+                console.log(error)
+            }
+            // Erro 405, o servidor não consegue acessar a página solicitada...
+            
+        })
+
+        const btnVerifyAuth = document.querySelector(".verify-auth");
+
+        btnVerifyAuth.addEventListener('click', async () => {
+            try{
+                // Coletando sessão com o token codificado
+                const authSession = 'Bearer ' + sessionStorage.getItem('session');
+                
+                // Executando auth.php enviando cabeçalhos http
+                const {data} = await axios.get('/backend-php/jwt-php/primeiro-jwt/backend/public/auth.php', {
+
+                    headers: {
+                        "Authorization": authSession
+                    }
+                })
+
+                // Retornando email do usuário
+                console.log(data.email);
+            }catch(error){
+                if(error.response.data === 'EXPIRED'){
+                    alert('Sessão expirou... ');
+                }
+            }
+            // let session = sessionStorage.getItem('session');
+
+            
+        })
+    </script>
+</body>
+</html>
